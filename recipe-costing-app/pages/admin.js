@@ -16,7 +16,10 @@ export default function Admin() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Sync failed");
-      setStatus({ type: "success", message: `Done — synced ${data.synced} ingredients from RCC.` });
+      setStatus({
+        type: "success",
+        message: `RCC sent back ${data.fetched} ingredient(s). ${data.synced} had a price and were saved.`
+      });
     } catch (err) {
       setStatus({ type: "error", message: err.message });
     } finally {
