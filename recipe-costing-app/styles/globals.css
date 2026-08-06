@@ -1,0 +1,286 @@
+:root {
+  --forest: #1f4d3e;
+  --forest-dark: #163a2e;
+  --sand: #f7f4ec;
+  --paper: #ffffff;
+  --amber-dark: #9c5c29;
+  --ink: #1e211f;
+  --ink-soft: #5c6360;
+  --line: #e3dfd2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--sand);
+  color: var(--ink);
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+.badge {
+  display: inline-block;
+  margin: 18px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--amber-dark);
+  background: #fbeadd;
+  border: 1px solid #efcba6;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+header {
+  padding-top: 6px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+
+.brand-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--forest-dark);
+  letter-spacing: -0.01em;
+}
+
+.brand-sub {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+h1 {
+  font-size: 26px;
+  margin: 22px 0 4px;
+  color: var(--forest-dark);
+}
+
+.lede {
+  color: var(--ink-soft);
+  font-size: 14.5px;
+  margin: 0;
+}
+
+.panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 20px;
+}
+
+.panel h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  margin: 0 0 16px;
+  font-weight: 600;
+}
+
+.field-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.field {
+  flex: 1;
+  min-width: 180px;
+}
+
+label {
+  display: block;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14.5px;
+  background: var(--sand);
+  color: var(--ink);
+}
+
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14.5px;
+  background: var(--sand);
+  color: var(--ink);
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--forest);
+  box-shadow: 0 0 0 3px rgba(31, 77, 62, 0.12);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: left;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  padding: 0 8px 10px;
+  font-weight: 600;
+}
+
+tbody td {
+  padding: 6px 8px;
+  vertical-align: middle;
+}
+
+tbody tr {
+  border-top: 1px solid var(--line);
+}
+
+.col-ing {
+  width: 42%;
+}
+.col-qty {
+  width: 18%;
+}
+.col-unit {
+  width: 16%;
+}
+.col-price {
+  width: 18%;
+  text-align: right;
+}
+.col-remove {
+  width: 6%;
+  text-align: center;
+}
+
+.price-cell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--forest-dark);
+  padding-right: 8px;
+}
+
+.unit-cell {
+  color: var(--ink-soft);
+  font-size: 13.5px;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.remove-btn:hover {
+  background: #f3efe3;
+  color: var(--amber-dark);
+}
+
+.add-row {
+  margin-top: 14px;
+  background: none;
+  border: 1px dashed #c9c3af;
+  color: var(--forest-dark);
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 9px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.add-row:hover {
+  background: #f1eee2;
+  border-color: var(--forest);
+}
+
+.totals-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14.5px;
+}
+
+.totals-line.sub {
+  color: var(--ink-soft);
+}
+
+.totals-line .val {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.total-card {
+  background: var(--forest-dark);
+  color: #efebdd;
+  border-radius: 14px;
+  padding: 24px 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.total-card .label {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.75;
+}
+
+.total-card .amount {
+  font-size: 34px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.total-card .per-portion {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+footer {
+  margin-top: 26px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.status-note {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin: 0 0 16px;
+}
