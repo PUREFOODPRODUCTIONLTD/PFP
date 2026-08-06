@@ -7,6 +7,8 @@
   --ink: #1e211f;
   --ink-soft: #5c6360;
   --line: #e3dfd2;
+  --badge-bg: #fbeadd;
+  --badge-border: #efcba6;
 }
 
 * {
@@ -33,10 +35,24 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--amber-dark);
-  background: #fbeadd;
-  border: 1px solid #efcba6;
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-border);
   padding: 4px 10px;
   border-radius: 20px;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  display: block;
+  object-fit: contain;
 }
 
 header {
