@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   try {
     const supabase = getSupabaseAdmin();
     const result = await runSync(supabase, rccApiKey);
-    return res.status(200).json({ synced: result.synced });
+    return res.status(200).json({ synced: result.synced, fetched: result.fetched });
   } catch (err) {
     console.error("POST /api/admin/sync failed:", err.message);
     return res.status(500).json({ error: err.message });
