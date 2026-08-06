@@ -18,22 +18,23 @@ async function fetchAllIngredients(rccApiKey) {
 
 async function runSync(supabase, rccApiKey) {
   const ingredients = await fetchAllIngredients(rccApiKey);
+  const fetched = Array.isArray(ingredients) ? ingredients.length : 0;
 
   const rows = ingredients
-    .filter((i) => typeof i.price_per_unit === "number")
+    .filter((i) => i.price_per_unit !== null && i.price_per_unit !== undefined && !Number.isNaN(Number(i.price_per_unit)))
     .map((i) => ({
       rcc_id: i.id,
       name: i.name,
       category: i.category_name || null,
       unit_name: i.unit_name || null,
-      price_per_unit: i.price_per_unit,
+      price_per_unit: Number(i.price_per_unit),
       pack_size: i.pack_size || null,
       pack_price: i.price || null,
       synced_at: new Date().toISOString()
     }));
 
   if (!rows.length) {
-    return { synced: 0 };
+    return { synced: 0, fetched };
   }
 
   const { error } = await supabase
@@ -44,7 +45,7 @@ async function runSync(supabase, rccApiKey) {
     throw new Error("Supabase upsert failed: " + error.message);
   }
 
-  return { synced: rows.length };
+  return { synced: rows.length, fetched };
 }
 
 module.exports = { runSync, fetchAllIngredients };
