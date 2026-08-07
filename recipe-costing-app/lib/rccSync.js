@@ -20,18 +20,33 @@ async function runSync(supabase, rccApiKey) {
   const ingredients = await fetchAllIngredients(rccApiKey);
   const fetched = Array.isArray(ingredients) ? ingredients.length : 0;
 
+  // RCC's own `price_per_unit` field is unreliable: for "Kilogram" and
+  // "Liter" ingredients it's actually priced per gram / per millilitre
+  // (1000x too low) even though unit_name says Kilogram/Liter. Rather than
+  // guess which units RCC silently rescales, we compute the price per the
+  // labelled unit ourselves directly from pack price and pack size, which
+  // is unambiguous and matches what the calculator displays and charges
+  // for. We only fall back to RCC's price_per_unit if pack data is missing.
   const rows = ingredients
-    .filter((i) => i.price_per_unit !== null && i.price_per_unit !== undefined && !Number.isNaN(Number(i.price_per_unit)))
-    .map((i) => ({
-      rcc_id: i.id,
-      name: i.name,
-      category: i.category_name || null,
-      unit_name: i.unit_name || null,
-      price_per_unit: Number(i.price_per_unit),
-      pack_size: i.pack_size || null,
-      pack_price: i.price || null,
-      synced_at: new Date().toISOString()
-    }));
+    .filter((i) => {
+      const hasPackData = typeof i.price === "number" && typeof i.pack_size === "number" && i.pack_size > 0;
+      const hasRccPpu = i.price_per_unit !== null && i.price_per_unit !== undefined && !Number.isNaN(Number(i.price_per_unit));
+      return hasPackData || hasRccPpu;
+    })
+    .map((i) => {
+      const hasPackData = typeof i.price === "number" && typeof i.pack_size === "number" && i.pack_size > 0;
+      const pricePerUnit = hasPackData ? i.price / i.pack_size : Number(i.price_per_unit);
+      return {
+        rcc_id: i.id,
+        name: i.name,
+        category: i.category_name || null,
+        unit_name: i.unit_name || null,
+        price_per_unit: pricePerUnit,
+        pack_size: i.pack_size || null,
+        pack_price: i.price || null,
+        synced_at: new Date().toISOString()
+      };
+    });
 
   if (!rows.length) {
     return { synced: 0, fetched };
