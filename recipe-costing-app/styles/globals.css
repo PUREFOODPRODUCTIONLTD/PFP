@@ -317,6 +317,27 @@ footer {
   background: #f1eee2;
 }
 
+.delete-recipe-btn {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e3b5a8;
+  border-radius: 8px;
+  background: #fbeeea;
+  color: #9c3b23;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.delete-recipe-btn:hover {
+  background: #f7ddd4;
+}
+
+.delete-recipe-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .actions-row {
   display: flex;
   gap: 10px;
