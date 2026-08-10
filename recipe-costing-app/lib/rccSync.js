@@ -24,11 +24,16 @@ async function runSync(supabase, rccApiKey) {
   // "Liter" ingredients it's actually priced per gram / per millilitre
   // (1000x too low) even though unit_name says Kilogram/Liter. Rather than
   // guess which units RCC silently rescales, we compute the price per the
-  // labelled unit ourselves directly from pack price and pack size, which
-  // is unambiguous and matches what the calculator displays and charges
-  // for. We only fall back to RCC's price_per_unit if pack data is missing.
-  // Values from RCC may arrive as strings, so coerce with Number() rather
-  // than trusting typeof.
+  // labelled unit ourselves directly from pack price and total pack
+  // quantity, which is unambiguous and matches what the calculator
+  // displays and charges for. We only fall back to RCC's price_per_unit if
+  // pack data is missing.
+  //
+  // Total pack quantity is pack_size * case_count, NOT pack_size alone.
+  // RCC's own item page shows this multiplied-out total (e.g. "6L" for a
+  // pack_size of 1 with a case_count of 6) - if we only divide by
+  // pack_size, a 6-pack priced as "case_count: 6, pack_size: 1" comes out
+  // 6x too expensive per unit. case_count defaults to 1 when missing.
   const rows = ingredients
     .filter((i) => {
       const packPrice = Number(i.price);
@@ -40,15 +45,17 @@ async function runSync(supabase, rccApiKey) {
     .map((i) => {
       const packPrice = Number(i.price);
       const packSize = Number(i.pack_size);
+      const caseCount = Number.isFinite(Number(i.case_count)) && Number(i.case_count) > 0 ? Number(i.case_count) : 1;
       const hasPackData = Number.isFinite(packPrice) && Number.isFinite(packSize) && packSize > 0;
-      const pricePerUnit = hasPackData ? packPrice / packSize : Number(i.price_per_unit);
+      const totalQuantity = packSize * caseCount;
+      const pricePerUnit = hasPackData ? packPrice / totalQuantity : Number(i.price_per_unit);
       return {
         rcc_id: i.id,
         name: i.name,
         category: i.category_name || null,
         unit_name: i.unit_name || null,
         price_per_unit: pricePerUnit,
-        pack_size: i.pack_size || null,
+        pack_size: hasPackData ? totalQuantity : i.pack_size || null,
         pack_price: i.price || null,
         synced_at: new Date().toISOString()
       };
