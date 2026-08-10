@@ -27,15 +27,21 @@ async function runSync(supabase, rccApiKey) {
   // labelled unit ourselves directly from pack price and pack size, which
   // is unambiguous and matches what the calculator displays and charges
   // for. We only fall back to RCC's price_per_unit if pack data is missing.
+  // Values from RCC may arrive as strings, so coerce with Number() rather
+  // than trusting typeof.
   const rows = ingredients
     .filter((i) => {
-      const hasPackData = typeof i.price === "number" && typeof i.pack_size === "number" && i.pack_size > 0;
+      const packPrice = Number(i.price);
+      const packSize = Number(i.pack_size);
+      const hasPackData = Number.isFinite(packPrice) && Number.isFinite(packSize) && packSize > 0;
       const hasRccPpu = i.price_per_unit !== null && i.price_per_unit !== undefined && !Number.isNaN(Number(i.price_per_unit));
       return hasPackData || hasRccPpu;
     })
     .map((i) => {
-      const hasPackData = typeof i.price === "number" && typeof i.pack_size === "number" && i.pack_size > 0;
-      const pricePerUnit = hasPackData ? i.price / i.pack_size : Number(i.price_per_unit);
+      const packPrice = Number(i.price);
+      const packSize = Number(i.pack_size);
+      const hasPackData = Number.isFinite(packPrice) && Number.isFinite(packSize) && packSize > 0;
+      const pricePerUnit = hasPackData ? packPrice / packSize : Number(i.price_per_unit);
       return {
         rcc_id: i.id,
         name: i.name,
