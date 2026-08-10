@@ -12,10 +12,15 @@ export default async function handler(req, res) {
 
   try {
     const supabase = getSupabaseAdmin();
+    // Supabase/PostgREST caps unpaginated queries at 1000 rows by default,
+    // which silently truncated the ingredient list (alphabetically, part
+    // way through "P") once we had 1409 ingredients. Explicitly request a
+    // higher range so the whole list comes through.
     const { data, error } = await supabase
       .from("ingredients")
       .select("rcc_id, name, unit_name")
-      .order("name", { ascending: true });
+      .order("name", { ascending: true })
+      .range(0, 4999);
 
     if (error) throw error;
 
