@@ -1,10 +1,12 @@
 import { useRouter } from "next/router";
 import Calculator from "../components/Calculator";
+import AuthGate from "../components/AuthGate";
 import { getCustomer } from "../lib/customers";
 
 // Per-customer branded pricing page, e.g. /atis. Add a new customer in
 // lib/customers.js and it's reachable here automatically - no new page
-// needed. Once real customer logins exist, they can redirect here.
+// needed. AuthGate asks for that customer's shared username/password
+// before showing the calculator.
 export default function CustomerPage() {
   const router = useRouter();
   const { customer: slug } = router.query;
@@ -23,5 +25,9 @@ export default function CustomerPage() {
     );
   }
 
-  return <Calculator customer={customer} />;
+  return (
+    <AuthGate customer={customer}>
+      <Calculator customer={customer} />
+    </AuthGate>
+  );
 }
