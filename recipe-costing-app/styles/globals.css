@@ -300,3 +300,158 @@ footer {
   color: var(--ink-soft);
   margin: 0 0 16px;
 }
+
+.new-recipe-btn {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--sand);
+  color: var(--forest-dark);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.new-recipe-btn:hover {
+  background: #f1eee2;
+}
+
+.actions-row {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0 6px;
+}
+
+.save-btn,
+.print-btn {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--line);
+}
+
+.save-btn {
+  background: var(--forest-dark);
+  color: #fff;
+  border-color: var(--forest-dark);
+}
+
+.save-btn:hover {
+  opacity: 0.92;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.print-btn {
+  background: var(--paper);
+  color: var(--forest-dark);
+}
+
+.print-btn:hover {
+  background: #f1eee2;
+}
+
+/* Print / save-as-PDF sheet: hidden on screen, shown only when printing.
+   The interactive app (everything wrapped in .no-print) is hidden instead
+   so the customer gets a clean recipe summary, not the input controls. */
+.print-sheet {
+  display: none;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-sheet {
+    display: block;
+  }
+  body {
+    background: #fff;
+  }
+  .wrap {
+    max-width: 100%;
+    padding: 0;
+  }
+}
+
+.print-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.print-brand img {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  object-fit: contain;
+}
+
+.print-brand-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+}
+
+.print-brand-sub {
+  font-size: 12px;
+  color: #555;
+  margin-top: 2px;
+}
+
+.print-sheet h1 {
+  font-size: 22px;
+  margin: 0 0 6px;
+  color: #111;
+}
+
+.print-yield {
+  color: #555;
+  margin: 0 0 20px;
+  font-size: 13.5px;
+}
+
+.print-sheet table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 22px;
+}
+
+.print-sheet th,
+.print-sheet td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  font-size: 13px;
+  color: #222;
+}
+
+.print-sheet th:last-child,
+.print-sheet td:last-child,
+.print-sheet th:nth-child(2),
+.print-sheet td:nth-child(2) {
+  text-align: right;
+}
+
+.print-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 6px 0;
+  color: #111;
+}
+
+.print-total.sub {
+  color: #555;
+  font-size: 13px;
+  font-weight: 500;
+}
