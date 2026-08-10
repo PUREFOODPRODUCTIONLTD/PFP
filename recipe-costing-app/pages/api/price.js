@@ -1,6 +1,11 @@
 // Calculates a recipe's price server-side. The browser sends ingredient
-// IDs + quantities and gets back marked-up prices only - raw supplier
+// IDs + quantities and gets back a marked-up price only - raw supplier
 // cost and the margin percentage never leave this function.
+//
+// Pricing model: cost of goods (marked up by settings.margin_pct, fixed at
+// 35%) only. There is no labour cost - customers are not charged for prep
+// time on this calculator. Batch yield is in kilograms, and the price-per-kg
+// figure is what customers use to compare/adjust batches.
 
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 
@@ -14,7 +19,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { ingredients, prepMinutes, portions } = req.body || {};
+  const { ingredients, batchYieldKg } = req.body || {};
 
   if (!Array.isArray(ingredients)) {
     return res.status(400).json({ error: "ingredients must be an array" });
@@ -25,13 +30,12 @@ export default async function handler(req, res) {
 
     const { data: settings, error: settingsError } = await supabase
       .from("settings")
-      .select("margin_pct, labour_rate_per_hour, currency_symbol")
+      .select("margin_pct, currency_symbol")
       .eq("id", 1)
       .single();
     if (settingsError) throw settingsError;
 
     const marginPct = Number(settings.margin_pct) || 0;
-    const labourRate = Number(settings.labour_rate_per_hour) || 0;
 
     const rccIds = ingredients
       .map((i) => i.rcc_id)
@@ -47,7 +51,7 @@ export default async function handler(req, res) {
       priceMap = Object.fromEntries(priceRows.map((r) => [r.rcc_id, r]));
     }
 
-    let ingredientsSubtotal = 0;
+    let total = 0;
     const lineItems = ingredients.map((item) => {
       const match = priceMap[item.rcc_id];
       const quantity = Number(item.quantity) || 0;
@@ -58,7 +62,7 @@ export default async function handler(req, res) {
 
       const markedUpUnitPrice = match.price_per_unit * (1 + marginPct);
       const lineTotal = markedUpUnitPrice * quantity;
-      ingredientsSubtotal += lineTotal;
+      total += lineTotal;
 
       return {
         rcc_id: item.rcc_id,
@@ -69,18 +73,13 @@ export default async function handler(req, res) {
       };
     });
 
-    const minutes = Number(prepMinutes) || 0;
-    const labourCost = (minutes / 60) * labourRate * (1 + marginPct);
-    const total = ingredientsSubtotal + labourCost;
-    const portionCount = Number(portions) > 0 ? Number(portions) : 1;
+    const yieldKg = Number(batchYieldKg) > 0 ? Number(batchYieldKg) : 1;
 
     return res.status(200).json({
       currencySymbol: settings.currency_symbol || "£",
       lineItems,
-      ingredientsSubtotal: round2(ingredientsSubtotal),
-      labourCost: round2(labourCost),
       total: round2(total),
-      perPortion: round2(total / portionCount)
+      perKg: round2(total / yieldKg)
     });
   } catch (err) {
     console.error("POST /api/price failed:", err.message);
