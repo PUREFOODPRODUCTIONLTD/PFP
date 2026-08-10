@@ -41,6 +41,7 @@ export default function Calculator({ customer }) {
   const [recipesError, setRecipesError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -216,6 +217,27 @@ export default function Calculator({ customer }) {
       .finally(() => setSaving(false));
   }
 
+  function handleDeleteRecipe() {
+    if (!recipeId) return;
+    const recipe = savedRecipes.find((r) => r.id === recipeId);
+    const confirmed = window.confirm(
+      "Delete " + (recipe ? "“" + recipe.name + "”" : "this recipe") + "? This can't be undone."
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setSaveMessage(null);
+
+    fetch("/api/recipes/" + recipeId, { method: "DELETE" })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to delete recipe");
+        handleNewRecipe();
+        refreshSavedRecipes();
+      })
+      .catch((err) => setSaveMessage(err.message))
+      .finally(() => setDeleting(false));
+  }
+
   const symbol = pricing?.currencySymbol || "£";
   const colors = customer.colors || {};
 
@@ -271,6 +293,19 @@ export default function Calculator({ customer }) {
                 + New recipe
               </button>
             </div>
+            {recipeId && (
+              <div className="field" style={{ maxWidth: 140 }}>
+                <label>&nbsp;</label>
+                <button
+                  type="button"
+                  className="delete-recipe-btn"
+                  onClick={handleDeleteRecipe}
+                  disabled={deleting}
+                >
+                  {deleting ? "Deleting…" : "Delete recipe"}
+                </button>
+              </div>
+            )}
           </div>
           {recipesError && <p className="status-note">{recipesError}</p>}
         </div>
@@ -285,7 +320,6 @@ export default function Calculator({ customer }) {
                 type="text"
                 value={recipeName}
                 onChange={(e) => setRecipeName(e.target.value)}
-                placeholder="e.g. Beef Lasagne (Catering Tray)"
               />
             </div>
             <div className="field" style={{ maxWidth: 180 }}>
